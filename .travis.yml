@@ -1,6 +1,12 @@
+env:
+  - secure: "Sn6SeT4XpNhNPpiaRlM+EzsNtJ9i/P4tCKhjrUMUIdTMSa5EmscZEHwxkiqArShhA/d889oQO0TCTrmmUgzoevWkNv/if4+zTa8sj0V1lx0vumoLUx1He92VQ9wCWM7hVtpm/3+lB2HVOSrMWLbZC0XC3V8o8+vbT9EzgiLuUTGmu1LmjszmTKDJHfOwm16GH7aFqKZR/KCN7eoulBY84na6psKxaawi6TpDO8aV/ielJggS/dLPHW0cvTpb3FKuHUxJgzLtwK1jBffm4hOq3xDbKl+WCLPA4Jjz2GWgbauv6+ylJKHvVHVTHSNYb5xdX0nv8b5B9MUgZP3q8YyXXrKCUKvkQnPV+eVSuFFBkfsWpcMnh2wsP+TLc0Xqh87tYF6oEZs+EGwSl9SKMP3QL/qtDGa0AHBjJmxn7fQ+bBhF31PLtc+sJ9p613ZcxZj1cGGygE4EJKhQ+reGyPIVoG7QTzYCwrz1E6dhDp+04uSZCNkO5vD2X9nxPZtPPefh9tUZlccU5bC61zW3Mjz4rKGv+fDL0yoXbdLC9GkW+q9KYCIkv5FfdBqUTI5yM72i/8bZso79wUf5FHwO8bjQ88MCu1ecDpLhktztxwpi0F2Feumpnj5Hi1fCgoeT0sA12XCSgb0hYaGsj0CjQ4vOJDEl5KTHU/rvjy75p6NqjWU="
+  - DOCKER_USER=odyno
+  - FIREFLY_III_VERSION=4.7.8
+
 sudo: required
+
 services:
-- docker
+  - docker
 matrix:
   include:
       - language: php
@@ -33,6 +39,15 @@ matrix:
         - docker run --rm --privileged multiarch/qemu-user-static:register --reset
         # build image
         - docker build -t odyno/rpi-firefly-iii .
+        # push image
+        - >
+          if [ "$TRAVIS_BRANCH" == "rpi-docker" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+            docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+            TAG=$(grep "ENV FIREFLY_III_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+            docker tag odyno/rpi-firefly-iii odyno/rpi-firefly-iii:$TAG
+            docker push odyno/rpi-firefly-iii:$TAG
+            docker push odyno/rpi-firefly-iii
+          fi
         branches:
           only:
           - rpi-docker
