@@ -33,3 +33,6 @@ matrix:
         - docker run --rm --privileged multiarch/qemu-user-static:register --reset
         # build image
         - docker build -t odyno/rpi-firefly-iii .
+        branches:
+          only:
+          - rpi-docker
