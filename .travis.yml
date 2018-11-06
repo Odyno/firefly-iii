@@ -1,53 +1,49 @@
-env:
-  - secure: "Sn6SeT4XpNhNPpiaRlM+EzsNtJ9i/P4tCKhjrUMUIdTMSa5EmscZEHwxkiqArShhA/d889oQO0TCTrmmUgzoevWkNv/if4+zTa8sj0V1lx0vumoLUx1He92VQ9wCWM7hVtpm/3+lB2HVOSrMWLbZC0XC3V8o8+vbT9EzgiLuUTGmu1LmjszmTKDJHfOwm16GH7aFqKZR/KCN7eoulBY84na6psKxaawi6TpDO8aV/ielJggS/dLPHW0cvTpb3FKuHUxJgzLtwK1jBffm4hOq3xDbKl+WCLPA4Jjz2GWgbauv6+ylJKHvVHVTHSNYb5xdX0nv8b5B9MUgZP3q8YyXXrKCUKvkQnPV+eVSuFFBkfsWpcMnh2wsP+TLc0Xqh87tYF6oEZs+EGwSl9SKMP3QL/qtDGa0AHBjJmxn7fQ+bBhF31PLtc+sJ9p613ZcxZj1cGGygE4EJKhQ+reGyPIVoG7QTzYCwrz1E6dhDp+04uSZCNkO5vD2X9nxPZtPPefh9tUZlccU5bC61zW3Mjz4rKGv+fDL0yoXbdLC9GkW+q9KYCIkv5FfdBqUTI5yM72i/8bZso79wUf5FHwO8bjQ88MCu1ecDpLhktztxwpi0F2Feumpnj5Hi1fCgoeT0sA12XCSgb0hYaGsj0CjQ4vOJDEl5KTHU/rvjy75p6NqjWU="
-  - DOCKER_USER=odyno
-  - FIREFLY_III_VERSION=4.7.8
-
 sudo: required
-
 services:
-  - docker
+- docker
 matrix:
   include:
-      - language: php
-        php:
-          - 7.2
-        cache:
-            directories:
-                - vendor
-                - $HOME/.composer/cache
-        install:
-          - rm composer.lock
-          - composer update --no-scripts
-          - cp .env.testing .env
-          - php artisan clear-compiled
-          - php artisan env
-          - wget -q https://github.com/firefly-iii/test-data/raw/master/storage/database.sqlite -O storage/database/database.sqlite
-          - mkdir -p build/logs
-        script:
-          - ./vendor/bin/phpunit -c phpunit.coverage.xml
-        after_success:
-          - travis_retry php vendor/bin/php-coveralls -x storage/build/clover-all.xml
-        # safelist
-        branches:
-          only:
-          - develop
-          - master
-      - language: bash
-        script:
-        # prepare qemu
-        - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-        # build image
-        - docker build -t odyno/rpi-firefly-iii .
-        # push image
-        - >
-          if [ "$TRAVIS_BRANCH" == "rpi-docker" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-            docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-            TAG=$(grep "ENV FIREFLY_III_VERSION" Dockerfile | awk 'NF>1{print $NF}')
-            docker tag odyno/rpi-firefly-iii odyno/rpi-firefly-iii:$TAG
-            docker push odyno/rpi-firefly-iii:$TAG
-            docker push odyno/rpi-firefly-iii
-          fi
-        branches:
-          only:
-          - rpi-docker
+  - language: php
+    php:
+    - 7.2
+    cache:
+      directories:
+      - vendor
+      - "$HOME/.composer/cache"
+    install:
+    - rm composer.lock
+    - composer update --no-scripts
+    - cp .env.testing .env
+    - php artisan clear-compiled
+    - php artisan env
+    - wget -q https://github.com/firefly-iii/test-data/raw/master/storage/database.sqlite
+      -O storage/database/database.sqlite
+    - mkdir -p build/logs
+    script:
+    - "./vendor/bin/phpunit -c phpunit.coverage.xml"
+    after_success:
+    - travis_retry php vendor/bin/php-coveralls -x storage/build/clover-all.xml
+    branches:
+      only:
+      - develop
+      - master
+  - language: bash
+    script:
+    - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+    - docker build -t odyno/rpi-firefly-iii .
+    - |
+      if [ "$TRAVIS_BRANCH" == "rpi-docker" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+        docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+        TAG=$(grep "ENV FIREFLY_III_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+        docker tag odyno/rpi-firefly-iii odyno/rpi-firefly-iii:$TAG
+        docker push odyno/rpi-firefly-iii:$TAG
+        docker push odyno/rpi-firefly-iii
+      fi
+    branches:
+      only:
+      - rpi-docker
+env:
+  global:
+  - FIREFLY_III_VERSION: 0.0.1
+  - secure: VsVGcxL61ZVoDkROWki8FwILRqnT4tgbRzOqhamcRhKkGiudVLNfzoyfRnz6TqQfBFRRvK+m5Upv0565zl9M1J48kHXzfQHVpkXmUF3xZooeCcn+e4kJw7mwPBoaTJ1+jX01g36AzTaghG7sEzE8pc8HncBHue9+IBBDZNRyPwvpzQlsaPKHD0yuVY/54ehLC5tewRBMiuX7ovkuj+3b0WRuzxX1m8DwXFI2T01XyO9HSjapLI7jrFR9QRD2j07YjdEgwhcQ/NSQcINNkXMGEZEsPRBMBhr7RnGJ/YnWIlxFD+Q7YbGN6Tzply/0FOa7kouYUXwmy0kUSQx69kbR9dMBhZwndLoLwlXarV5gE6UdVLxYbPAkm1G2AqdQCPP0fljdtHL5yqjlpHwxxeUkO3/MNjeTtKbh+BYuM2h+NOPNTFEDFkEwUZPcAAnmKYrv+FeVQ9oVO4ceErkiS/gEfmxAQWb+DNgapAJgxCCYtvb8eeTteOweB+gqDaA/OAoRy9HN4nHHa+59C8pleyfLT09khen6glj9oaaXmffL2nzRwHVgv7Lujn4QbtAwu7JqZohw/svEfQTbmXqq65c40XAtxHbxI9Mc6+WCKGPSTAnhK8dw99HCDsYwXKBHoGm6KLorRqw8ZNSD5DuiQzkxucCPZK5X4EdGRS6z3+WDFuE=
+  - secure: LCCe5lQmh5MFl+lSegosoc6qQLwDk+7bGLXdET7q0UutvLyu8B7/EDTfqaYaxx3r5bCxl0qspXW4IPmzkjyVTItEahhlKHQtX87NWKE22P2OfJIFtj+SGhUVxuS+Gr30JUeo3r2FpADl86TmYYAjwFvVZ9O4JTj+JLQiQLDfdILCxrGsfdgJes2hSAXDbvNU5/GwqMyv7gy+aLZFGaF5TCOYONeK169azYWPAAS9nplC7hNdHSh0bl+KY8g51R8hTIBgzSHgpzIKsp5bl6foc7PSWda52QFWLY7TacF7i6WgRN9xxjy9Sbde1mH4p0zLk0deoW4Mq90CJzUfjqjUh3WnIY55AHo/KaSjuE72WsvLRHC9gpLMWlP9K+Nd8tMycvGAgCvI+JSvF7WD5N4vShsDfguxwBL7AAAfvyV0y+ffV/WIj4GN0VEvujhWuP5VdKfBY2V96Pu4EPeD3sJyC7SXjz/pqm3gqA1zLYjLF1SzGt1AUTsDzFIYwwtd2J0oOyMZHDUcc63p+kSucqmqan+lI2k+GcjkfkCuBMoIHTXyij/RomJAhQnE8PMb5J4wwqd30fE2lRHz7YMl4ffc3xyGcNqGDcEk2aODP09uttUx/GdF0WjXxUmG1vkGLaLUK9kIIsJ+INSmbfWxztRDZs2zJ42Vmvt6+3CSuAjzFJw=
