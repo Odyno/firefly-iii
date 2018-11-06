@@ -33,8 +33,10 @@ matrix:
     - docker build -t odyno/rpi-firefly-iii .
     - |
       if [ "$TRAVIS_BRANCH" == "rpi-docker" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-        docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-        TAG=$(grep "ENV FIREFLY_III_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+        #docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+        #TAG=$(grep "ENV FIREFLY_III_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+        TAG=$FIREFLY_III_VERSION
         docker tag odyno/rpi-firefly-iii odyno/rpi-firefly-iii:$TAG
         docker push odyno/rpi-firefly-iii:$TAG
         docker push odyno/rpi-firefly-iii
@@ -45,5 +47,5 @@ matrix:
 env:
   global:
   - FIREFLY_III_VERSION: 0.0.1
-  - secure: VsVGcxL61ZVoDkROWki8FwILRqnT4tgbRzOqhamcRhKkGiudVLNfzoyfRnz6TqQfBFRRvK+m5Upv0565zl9M1J48kHXzfQHVpkXmUF3xZooeCcn+e4kJw7mwPBoaTJ1+jX01g36AzTaghG7sEzE8pc8HncBHue9+IBBDZNRyPwvpzQlsaPKHD0yuVY/54ehLC5tewRBMiuX7ovkuj+3b0WRuzxX1m8DwXFI2T01XyO9HSjapLI7jrFR9QRD2j07YjdEgwhcQ/NSQcINNkXMGEZEsPRBMBhr7RnGJ/YnWIlxFD+Q7YbGN6Tzply/0FOa7kouYUXwmy0kUSQx69kbR9dMBhZwndLoLwlXarV5gE6UdVLxYbPAkm1G2AqdQCPP0fljdtHL5yqjlpHwxxeUkO3/MNjeTtKbh+BYuM2h+NOPNTFEDFkEwUZPcAAnmKYrv+FeVQ9oVO4ceErkiS/gEfmxAQWb+DNgapAJgxCCYtvb8eeTteOweB+gqDaA/OAoRy9HN4nHHa+59C8pleyfLT09khen6glj9oaaXmffL2nzRwHVgv7Lujn4QbtAwu7JqZohw/svEfQTbmXqq65c40XAtxHbxI9Mc6+WCKGPSTAnhK8dw99HCDsYwXKBHoGm6KLorRqw8ZNSD5DuiQzkxucCPZK5X4EdGRS6z3+WDFuE=
-  - secure: LCCe5lQmh5MFl+lSegosoc6qQLwDk+7bGLXdET7q0UutvLyu8B7/EDTfqaYaxx3r5bCxl0qspXW4IPmzkjyVTItEahhlKHQtX87NWKE22P2OfJIFtj+SGhUVxuS+Gr30JUeo3r2FpADl86TmYYAjwFvVZ9O4JTj+JLQiQLDfdILCxrGsfdgJes2hSAXDbvNU5/GwqMyv7gy+aLZFGaF5TCOYONeK169azYWPAAS9nplC7hNdHSh0bl+KY8g51R8hTIBgzSHgpzIKsp5bl6foc7PSWda52QFWLY7TacF7i6WgRN9xxjy9Sbde1mH4p0zLk0deoW4Mq90CJzUfjqjUh3WnIY55AHo/KaSjuE72WsvLRHC9gpLMWlP9K+Nd8tMycvGAgCvI+JSvF7WD5N4vShsDfguxwBL7AAAfvyV0y+ffV/WIj4GN0VEvujhWuP5VdKfBY2V96Pu4EPeD3sJyC7SXjz/pqm3gqA1zLYjLF1SzGt1AUTsDzFIYwwtd2J0oOyMZHDUcc63p+kSucqmqan+lI2k+GcjkfkCuBMoIHTXyij/RomJAhQnE8PMb5J4wwqd30fE2lRHz7YMl4ffc3xyGcNqGDcEk2aODP09uttUx/GdF0WjXxUmG1vkGLaLUK9kIIsJ+INSmbfWxztRDZs2zJ42Vmvt6+3CSuAjzFJw=
+  - DOCKER_USER: odyno
+  - secure: J9xgh2sMlhMYr/CY24Tr2cAiRqbY5ktR1yueMTiH/CNtNuWN2x1cORd4lZuXMMwfeC24VkhOEbp/6qufao0OZaUZiQFrPa9uVSTxsQBbZI42CvlXmnnTeUG6UsllD7JDR9omtL+evffsi7FGSkQMJRpg5zSfCeBA11GD1lu9pXUSjwLULCrXevLIAKqBJ9UXU2fhdqevNogLupUuPgDgPLzv9dXqQNbCCicnu/6seTVCJbshHlISi6jU42NiyKONmDKCSYAeCM/G8pa3Rl66L970IgH4dVOaoJRkbG3mF6Cfj73CobX+ThKkcbiFgMpP6/zcHmSuyauFXmv3xInXrInnOkGA/doDdpyhehVxUPOPHcPN7RWv14Mufo26gI455XZc0x/iIWCc6dEAi79Pz/EuhXjXtSr3UHdfObgRR/MhjX0Q8vZqDv0rpKGPqMoblERQysCD03bNcm2g1i+Rh8BiCJYYwTm8H5GGR8ONPaITgPXrZAKmsbAcGWzCjT724gneEVbEGSCKCmP/F+ZQovaWlhuR1W7IlsPSsOht4on1/CkzrNstt0C/UfP1RI13U9isDVdhAijLC69vWBfjv+2mEiQ/HsWieE+X8DzlqxQfnSTCo+oWsSkf4bbC5nSrlomM4XbLTypaSqoOjXqTWUXEDhJslOcflmOJA0iBivU=
