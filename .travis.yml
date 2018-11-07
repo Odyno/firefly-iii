@@ -30,7 +30,7 @@ matrix:
   - language: bash
     script:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-    - docker build -t odyno/rpi-firefly-iii .
+    - docker build -f Dockerfile.rpi -t odyno/rpi-firefly-iii .
     - |
       if [ "$TRAVIS_BRANCH" == "rpi-docker" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
         #docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
