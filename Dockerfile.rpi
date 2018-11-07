@@ -1,4 +1,4 @@
-FROM arm32v7/php:7.2-apache
+FROM arm32v7/php:7.2-apache-stretch
 
 
 # If building on a RPi, use --build-arg cores=3 to use all cores when compiling
