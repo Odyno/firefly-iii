@@ -30,16 +30,20 @@ matrix:
   - language: bash
     script:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-    - docker build -f Dockerfile.rpi -t odyno/rpi-firefly-iii .
+    - mkdir tmp
+    - >
+      pushd tmp &&
+      curl -L -o qemu-arm-static.tar.gz https://github.com/multiarch/qemu-user-static/releases/download/v2.6.0/qemu-arm-static.tar.gz &&
+      tar xzf qemu-arm-static.tar.gz &&
+      popd
+    - docker build -f ./Dockerfile.rpi -t odyno/firefly-iii:arm32v7 .
     - |
       if [ "$TRAVIS_BRANCH" == "rpi-docker" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-        #docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-        #TAG=$(grep "ENV FIREFLY_III_VERSION" Dockerfile | awk 'NF>1{print $NF}')
         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
         TAG=$FIREFLY_III_VERSION
-        docker tag odyno/rpi-firefly-iii odyno/rpi-firefly-iii:$TAG
-        docker push odyno/rpi-firefly-iii:$TAG
-        docker push odyno/rpi-firefly-iii
+        docker tag odyno/firefly-iii:arm32v7 odyno/firefly-iii:arm32v7-$TAG
+        docker push odyno/firefly-iii:arm32v7-$TAG
+        docker push odyno/firefly-iii:arm32v7
       fi
     branches:
       only:

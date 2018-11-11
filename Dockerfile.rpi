@@ -1,5 +1,7 @@
 FROM arm32v7/php:7.2-apache-stretch
 
+COPY tmp/qemu-arm-static /usr/bin/qemu-arm-static
+
 
 # If building on a RPi, use --build-arg cores=3 to use all cores when compiling
 # to speed up the image build
@@ -32,7 +34,7 @@ RUN apt-get update -y && \
                                                libbz2-dev \
                                                gettext-base \
                                                cron \
-                                                rsyslog \
+                                               rsyslog \
                                                supervisor \
                                                locales && \
                                                apt-get clean && \
