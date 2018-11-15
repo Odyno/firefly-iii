@@ -27,6 +27,7 @@ return [
     'env'             => envNonEmpty('APP_ENV', 'production'),
     'debug'           => env('APP_DEBUG', false),
     'url'             => envNonEmpty('APP_URL', 'http://localhost'),
+    'web_path'        => parse_url(envNonEmpty('APP_URL', 'http://localhost'), PHP_URL_PATH ),
     'timezone'        => envNonEmpty('TZ', 'UTC'),
     'locale'          => 'en_US',
     'fallback_locale' => 'en_US',
